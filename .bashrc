@@ -139,9 +139,49 @@ function onExit
     fi
 }
 
+# A nifty shell function that will jump (set shell's current working directory)
+# to the first directory that is an exact match of the file name given 
+# Notice that all parameters to `lucky` are passed as a single file name to
+# `find`. This means that lucky doesn't recognise any options and will treat
+# its entire argument list as a single file name.
+# Notice also, that wildcards are supported the same way the are recognised by
+# `find`. Use `lucky \*criteriainthemiddle\*` to search file names that contain
+# criteria. See find's manual page for more info
+
+function lucky 
+{   
+    if [ -z "$@" ]
+    then
+        echo 2>&1 "No arguments passed"
+        return 1
+    fi
+
+    echo "This may take a while. Please wait..."
+    local path=$(find . -name "$@" | head -1)
+
+    if [ -e "$path" ]
+    then
+        if [ -d "$path" ]
+        then
+            if [ -r "$path" ]
+            then
+                
+                cd "$path"
+            else
+                echo 2>&1 "lucky: error: Can't read directory"
+            fi
+        else
+            echo 2>&1 "lucky: error: Path is not directory"
+        fi
+    else
+        echo 2>&1 "lucky: error: Path does not exist"
+    fi
+
+}
+
 function recordInstanceHistory
 {   
-    
+
     if [ $SHELLRECORDHISTORY -eq 0 ]
     then
         SHELLRECORDHISTORY=1
@@ -152,3 +192,4 @@ function recordInstanceHistory
 trap onExit EXIT
 
 export LD_LIBRARY_PATH=/usr/bib
+export ANDROID_HOME=/opt/android-sdk
