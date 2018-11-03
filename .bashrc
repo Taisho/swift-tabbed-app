@@ -37,6 +37,7 @@ alias l="$ls_commands $ls_opts $color"
 	alias lh="$ls_commands $ls_opts | head"
 alias la="$ls_commands $ls_opts -a $color"
 alias ll='ls --group-directories-first -F $ls_opts --color=always | less -R; ls --group-directories-first -F $ls_opts --color=always'
+alias I="i "
 
  
 LS_COLORS='di=1:fi=0:ln=31:pi=5:so=5:bd=5:cd=5:or=31:mi=0:ex=35:*.sh=90'
@@ -150,14 +151,14 @@ function onExit
 
 function lucky 
 {   
-    if [ -z "$@" ]
+    if [ -z "$*" ]
     then
         echo 2>&1 "No arguments passed"
         return 1
     fi
 
     echo "This may take a while. Please wait..."
-    local path=$(find . -name "$@" | head -1)
+    local path=$(find . -type d -name "$*" 2>/dev/null | head -1 )
 
     if [ -e "$path" ]
     then
@@ -168,15 +169,38 @@ function lucky
                 
                 cd "$path"
             else
-                echo 2>&1 "lucky: error: Can't read directory"
+                echo 2>&2 "lucky: error: Can't read directory"
             fi
         else
-            echo 2>&1 "lucky: error: Path is not directory"
+            echo 1>&2 "lucky: error: Path is not directory"
         fi
     else
-        echo 2>&1 "lucky: error: Path does not exist"
+        if which cowsay 2>&1 1>/dev/null
+        then
+            cowsay "lucky: error: Path doesn't exist"
+        elif which ponysay 2>&1 >/dev/null
+        then
+            ponysay "lucky: error: Path doesn't exist"
+        else
+            echo 2>&1 "lucky: error: Path doesn't exist"
+        fi
     fi
 
+}
+
+function i
+{
+    if [ -z "$*" ]
+    then
+        echo 2>&1 "No arguments passed. Try with 'i feel lucky'"
+        return 1
+    fi
+
+    if [ "$(echo "$*" | sed -n '/feel\s*lucky/p')" ]
+    then
+        local path="$(echo "$*" | sed -n 's/.*feel\s*lucky\s*//p')"
+        lucky "$path"
+    fi
 }
 
 function recordInstanceHistory
