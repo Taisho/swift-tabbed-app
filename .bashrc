@@ -153,12 +153,19 @@ function lucky
 {   
     if [ -z "$*" ]
     then
-        echo 2>&1 "No arguments passed"
+        echo 1>&2 "No arguments passed"
         return 1
     fi
 
     echo "This may take a while. Please wait..."
-    local path=$(find . -type d -name "$*" 2>/dev/null | head -1 )
+
+    local path="$*"
+    ls "$*" 1>&2 2>/dev/null 
+    if [ $? != 0 ]
+    then
+        path=$(find . -type d -name "$*" 2>/dev/null | head -1 )
+    fi
+
 
     if [ -e "$path" ]
     then
@@ -169,7 +176,7 @@ function lucky
                 
                 cd "$path"
             else
-                echo 2>&2 "lucky: error: Can't read directory"
+                echo 1>&2 "lucky: error: Can't read directory"
             fi
         else
             echo 1>&2 "lucky: error: Path is not directory"
@@ -178,7 +185,7 @@ function lucky
         if which cowsay 2>&1 1>/dev/null
         then
             cowsay "lucky: error: Path doesn't exist"
-        elif which ponysay 2>&1 >/dev/null
+        elif which ponysay 2>&1 1>/dev/null
         then
             ponysay "lucky: error: Path doesn't exist"
         else

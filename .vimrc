@@ -19,6 +19,8 @@ Plugin 'file:///home/tichomir/local/opt/syntastic'
 Plugin 'airblade/vim-gitgutter'
 " Plugin 'vim-plugin-minibufexpl/vim-plugin-minibufexpl'
 " Plugin 'file:///home/tichomir/local/opt/vim-plugin-minibufexpl'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'Quramy/tsuquyomi'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
